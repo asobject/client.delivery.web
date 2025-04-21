@@ -1,0 +1,18 @@
+{
+  "/suggest-api": {
+    "target": "https://suggest-maps.yandex.ru",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/suggest-api": ""
+    }
+  },
+  "/geocode-api": {
+    "target": "https://geocode-maps.yandex.ru",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/geocode-api": ""
+    }
+  }
+}

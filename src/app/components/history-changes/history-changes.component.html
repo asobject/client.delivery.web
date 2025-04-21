@@ -1,0 +1,35 @@
+<div class="container">
+  <p-card header="История изменений">
+    <p-accordion>
+        <p-accordion-panel [value]="1">
+          <p-accordion-header >
+            <span class="font-bold">Статус</span>
+          </p-accordion-header>
+          <p-accordion-content>
+            @for (status of statuses; track $index)
+            {
+              <div><strong>Статус:</strong> <p-tag [value]="getOrderStatusLabel(status.status)" [severity]="getOrderStatusSeverity(status.status)"></p-tag></div>
+              <div><strong>Дата:</strong>{{status.changeAt}} UTC</div>
+            }
+            @empty {
+              <div><strong>Нет изменений</strong></div>
+            }
+          </p-accordion-content>
+        </p-accordion-panel>
+      <p-accordion-panel [value]="2">
+        <p-accordion-header >
+          <span class="font-bold">Местоположение</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          @for (point of points; track $index)
+          {
+            <div><strong>Адрес:</strong>{{point.address}}</div>
+            <div><strong>Дата:</strong>{{point.changeAt}} UTC</div>
+          } @empty {
+            <div><strong>Нет изменений</strong></div>
+          }
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </p-card>
+</div>

@@ -1,0 +1,22 @@
+<div class="container">
+  <p-card header="Наши пункты">
+    <div id="map" #mapContainer class="map-container"></div>
+  </p-card>
+  <p-dialog [(visible)]="pointDialog" [style]="{ width: '400px' }" appendTo header="Детали пункта" draggable="false" (onHide)="hideDialog()"
+            [modal]="true">
+    <ng-template #content>
+      <div>
+        <small class="text-muted">Наименование пункта</small>
+        <div class="font-semibold">{{ selectedPoint.name }}</div>
+      </div>
+      <div>
+        <small class="text-muted">Адрес</small>
+        <div>{{ selectedPoint.address }}</div>
+      </div>
+      <div>
+        <small class="text-muted">Тип</small>
+        <div>{{ getPointTypeLabel(selectedPoint.pointType) }}</div>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

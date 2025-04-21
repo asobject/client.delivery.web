@@ -1,0 +1,24 @@
+<div class="container">
+    <div id="map" #mapContainer class="map-container"></div>
+</div>
+<div class="card flex justify-center">
+<p-confirmDialog>
+  <ng-template  #message let-message>
+    <div class="flex flex-column gap-3">
+      <div class="flex flex-column gap-1">
+        <small class="text-sm text-color-secondary">Наименование пункта</small>
+        <span class="font-semibold">{{ selectedPoint.name }}</span>
+      </div>
+
+      <div class="flex flex-column gap-1">
+        <small class="text-sm text-color-secondary">Адрес</small>
+        <span class="text-color">{{ selectedPoint.address }}</span>
+      </div>
+      <div class="flex flex-column gap-1">
+        <small class="text-sm text-color-secondary">Тип</small>
+        <span class="text-color">{{ getPointTypeLabel(selectedPoint.pointType) }}</span>
+      </div>
+    </div>
+  </ng-template>
+</p-confirmDialog>
+</div>

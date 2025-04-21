@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "client.delivery": {
+    "MyDelivery": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/client.delivery",
+            "outputPath": "dist/my-delivery",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -62,12 +62,19 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "ssl": true,
+            "sslCert": "src/certs/localhost.pem",
+            "sslKey": "src/certs/localhost-key.pem",
+            "host": "localhost",
+            "proxyConfig": "src/proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "client.delivery:build:production"
+              "buildTarget": "MyDelivery:build:production"
             },
             "development": {
-              "buildTarget": "client.delivery:build:development"
+              "buildTarget": "MyDelivery:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -98,5 +105,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
