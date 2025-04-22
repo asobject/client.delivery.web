@@ -1,0 +1,21 @@
+<div class="container">
+  <p-card header="Отследить посылку">
+    <form [formGroup]="trackingForm" (ngSubmit)="submit()">
+
+      <p-button label="Где найти номер заказа?" styleClass="pl-0" link="true"/>
+      <div class="tracking-input-group">
+        <p-input-group>
+          <p-floatlabel variant="in">
+            <input
+              pInputText
+              formControlName="tracker"
+              id="trackNumber"
+              style="height: 45px"/>
+            <label for="trackNumber">Трек номер</label>
+            <button pButton severity="info" type="submit" icon="pi pi-search"></button>
+          </p-floatlabel>
+        </p-input-group>
+      </div>
+    </form>
+  </p-card>
+</div>
