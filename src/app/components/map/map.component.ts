@@ -9,6 +9,8 @@ import {ClusterDTO} from '../../_models/clusterDTO';
 import {Dialog} from 'primeng/dialog';
 import {Coordinates} from '../../_models/coordinates';
 import {getPointTypeLabel} from '../../_enums/point-type.enum';
+import {NgIf} from '@angular/common';
+import {Skeleton} from 'primeng/skeleton';
 
 @Component({
   selector: 'app-map',
@@ -18,6 +20,8 @@ import {getPointTypeLabel} from '../../_enums/point-type.enum';
     FormsModule,
     Dialog,
     ReactiveFormsModule,
+    NgIf,
+    Skeleton,
   ],
   templateUrl: './map.component.html',
   styleUrl: './map.component.scss'
@@ -29,8 +33,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private map: any;
   private ymaps = (window as any).ymaps;
   private center: Coordinates = {latitude: 55.0415, longitude: 82.9346};
-  loading: boolean = false;
+  loadingMap: boolean = true;
   pointDialog: boolean = false;
+  loadingPoint:boolean = true;
 
   constructor(private pointService: PointService, private fb: FormBuilder, private ngZone: NgZone) {
 
@@ -65,6 +70,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.addMarkers();
     });
+    this.loadingMap=false;
   }
 
 
@@ -77,11 +83,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       placemark.events.add('click', () => {
 
         this.ngZone.run(() => {
-          this.pointService.getPoint(placemark.properties.get('id')).pipe(takeUntil(this.destroy$))
+          this.pointDialog = true;
+          this.pointService.getPoint(placemark.properties.get('id')).pipe(takeUntil(this.destroy$),finalize(() => this.loadingPoint = false))
             .subscribe({
               next: (data) => {
                 this.selectedPoint = data;
-                this.pointDialog = true;
               },
               error: () => {
               }

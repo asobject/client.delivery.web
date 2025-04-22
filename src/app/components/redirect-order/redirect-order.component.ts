@@ -7,8 +7,6 @@ import {AutoComplete, AutoCompleteCompleteEvent} from 'primeng/autocomplete';
 import {Card} from 'primeng/card';
 import {DropdownModule} from 'primeng/dropdown';
 import {Button, ButtonDirective} from 'primeng/button';
-import {InputText} from 'primeng/inputtext';
-import {InputGroup} from 'primeng/inputgroup';
 import {FloatLabel} from 'primeng/floatlabel';
 import {Select} from 'primeng/select';
 import { getPackageSizeOptions} from '../../_enums/package-size.enum';
@@ -22,8 +20,6 @@ import { getPackageSizeOptions} from '../../_enums/package-size.enum';
     DropdownModule,
     ButtonDirective,
     Button,
-    InputText,
-    InputGroup,
     FloatLabel,
     Select
   ],
@@ -33,7 +29,7 @@ import { getPackageSizeOptions} from '../../_enums/package-size.enum';
 export class RedirectOrderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   deliveryForm: FormGroup;
-  selectedSize: string | null = null;
+
   suggestions: string[] = [];
   packageSizeOptions = getPackageSizeOptions();
 

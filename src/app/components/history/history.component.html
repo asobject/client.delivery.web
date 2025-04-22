@@ -1,15 +1,30 @@
 <div class="container">
   <p-card header="История заказов">
+    <div *ngIf="loading">
+      @for (item of Array(rows).fill(0); track $index) {
+        <div class="mb-3">
+          <p-skeleton width="120px" height="2rem" styleClass="mb-2"></p-skeleton>
+        </div>
+      }
+
+      <div class="mt-3">
+        <p-skeleton width="100%" height="40px"></p-skeleton>
+      </div>
+    </div>
+    <div *ngIf="!loading">
       <p-accordion>
         @for (order of orders; track i; let i = $index) {
           <p-accordion-panel [value]="i">
-            <p-accordion-header >
+            <p-accordion-header>
               <span class="font-bold">№ {{ order.tracker }}</span>
             </p-accordion-header>
             <p-accordion-content>
               <div>
-                <div >
-                  <p><strong>Статус:</strong><p-tag [value]="getOrderStatusLabel(order.status)" [severity]="getOrderStatusSeverity(order.status)"></p-tag></p>
+                <div>
+                  <p><strong>Статус:</strong>
+                    <p-tag [value]="getOrderStatusLabel(order.status)"
+                           [severity]="getOrderStatusSeverity(order.status)"></p-tag>
+                  </p>
                   @if (order.currentPointAddress) {
                     <p><strong>Текущая точка:</strong> {{ order.currentPointAddress }}</p>
                   }
@@ -19,19 +34,21 @@
                   <p><strong>Адрес получения:</strong> {{ order.receiverAddress }}</p>
                 </div>
                 <div>
-                  <p><strong>Посмотреть изменения:</strong> <p-button icon="pi pi-info" size="small" class="mr-2"  [rounded]="false" [outlined]="true"
-                                                                       (click)="showInfo(order.tracker)"></p-button></p>
+                  <p><strong>Посмотреть изменения:</strong>
+                    <p-button icon="pi pi-info" size="small" class="mr-2" [rounded]="false" [outlined]="true"
+                              (click)="showInfo(order.tracker)"></p-button>
+                  </p>
                 </div>
               </div>
             </p-accordion-content>
           </p-accordion-panel>
-        }
-        @empty {
+        } @empty {
           <p class="p-3">Нет доступных заказов</p>
         }
       </p-accordion>
-    <div>
-      <p-paginator  (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords"  />
+      <div>
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords"/>
+      </div>
     </div>
   </p-card>
 </div>

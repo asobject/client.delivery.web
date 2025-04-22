@@ -11,6 +11,7 @@ import {OrderDTO} from '../../_models/orderDTO';
 import {Router} from '@angular/router';
 import {Accordion, AccordionModule} from 'primeng/accordion';
 import { CommonModule } from '@angular/common';
+import {Skeleton} from 'primeng/skeleton';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { CommonModule } from '@angular/common';
     TableModule,
     Card,
     Tag,
-    Button, AccordionModule, CommonModule, Button
+    Button, AccordionModule, CommonModule, Button, Skeleton
   ],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss'
@@ -29,7 +30,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   totalRecords: number = 0;
   orders!:OrderDTO[];
-  loading = false;
+  loading:boolean = true;
   first: number = 0;
 
   rows: number = 5;
@@ -38,12 +39,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   constructor(private orderService: OrderService,private  router: Router ) {}
   ngOnInit() : void {
-    this.loading = true;
 
        this.orderService.getOrders(this.first+1, this.rows)
       .pipe(
-        takeUntil(this.destroy$), // Отписываемся при уничтожении компонента
-        finalize(() => (this.loading = false)) // Устанавливаем loading в false после завершения
+        takeUntil(this.destroy$),
+        finalize(() => (this.loading = false))
       )
       .subscribe({
         next: result => {
@@ -57,7 +57,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   loadOrders($event: PaginatorState): void {
     this.loading = true;
-    const page = $event?.first ?? 0;
+    this.first = $event.first ?? 0;
+    this.rows = $event.rows ?? this.rows;
+    let page = $event?.first ?? 0;
+    page/=this.rows
     const pageSize = $event?.rows ?? this.rows;
     this.orderService.getOrders(page + 1, pageSize).pipe(takeUntil(this.destroy$),finalize(()=>this.loading=false)).subscribe(
       {
@@ -79,16 +82,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
   protected readonly getOrderStatusLabel = getOrderStatusLabel;
 
   showInfo(tracker: string) {
-    const url = this.router.createUrlTree([`/users/me/orders/${tracker}/changes`]).toString();
+    const url = this.router.createUrlTree([`/user/orders/${tracker}/changes`]).toString();
     window.open(url, '_blank');
   }
 
   protected readonly getOrderStatusSeverity = getOrderStatusSeverity;
 
   onPageChange($event: PaginatorState) {
-    this.first = $event.first ?? 0;
-    this.rows = $event.rows ?? this.rows;
     this.loadOrders($event);
     this.accordion.updateValue(-1);
   }
+
+  protected readonly Array = Array;
 }

@@ -24,11 +24,8 @@ import {JwtService} from '../../_services/auth/jwt.service';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
-  title: string = 'MyDelivery';
-  adminOpen = false;
   menuBar: MenuItem[] | undefined;
   profileMenu: MenuItem[] | undefined;
-  adminMenu: MenuItem[] | undefined;
 
   constructor(
     private authService: AuthService,
@@ -46,18 +43,6 @@ export class HeaderComponent implements OnInit {
     return 'Пользователь';
   }
   ngOnInit() {
-    this.adminMenu=[
-      {
-        label: 'Админ панель',
-        items: [
-          {
-            label: 'Редактор пунктов',
-            icon: 'pi pi-map-marker',
-            routerLink: '/admin/editor/point'
-          }
-        ]
-      }
-    ]
 
     this.menuBar = [
       {
@@ -78,7 +63,7 @@ export class HeaderComponent implements OnInit {
           {
             label: 'Ваши доставки',
             icon: 'pi pi-truck',
-            routerLink: '/users/me/orders'
+            routerLink: '/user/orders'
           },
           {
             label: 'Выйти',

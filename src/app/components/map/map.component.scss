@@ -4,6 +4,8 @@
   padding: 1rem 0;
 }
 .map-container {
-  height: 600px;
+  height: calc(100vh - 150px);
 }
-
+.skeleton-container{
+  height: calc(100vh - 150px);
+}

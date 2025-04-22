@@ -1,5 +1,10 @@
 <div class="container">
   <p-card header="История изменений">
+    <div *ngIf="loading">
+      <p-skeleton width="120px" height="2rem" styleClass="mb-2"></p-skeleton>
+      <p-skeleton width="120px" height="2rem" styleClass="mb-2"></p-skeleton>
+    </div>
+    <div *ngIf="!loading">
     <p-accordion>
         <p-accordion-panel [value]="1">
           <p-accordion-header >
@@ -31,5 +36,6 @@
         </p-accordion-content>
       </p-accordion-panel>
     </p-accordion>
+    </div>
   </p-card>
 </div>

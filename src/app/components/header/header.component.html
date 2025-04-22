@@ -21,20 +21,7 @@
         routerLink="/login"
       />
     </div>
-    <div class="flex items-center gap-2" *ngIf="userService.isAuthenticated()">
-      <div *ngIf="userService.hasRole(['Admin'])">
-
-        <p-menu  #menu [model]="adminMenu" [popup]="true"/>
-        <button
-          pButton
-          size="small"
-          severity="danger"
-          icon="pi pi-exclamation-triangle"
-          label="Admin"
-          class="p-button-rounded"
-          (click)="menu.toggle($event)"
-        ></button>
-      </div>
+    <div  *ngIf="userService.isAuthenticated()">
     <p-menu  #menu [model]="profileMenu" [popup]="true"/>
     <button
       pButton

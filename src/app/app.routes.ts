@@ -29,13 +29,17 @@ export const routes: Routes = [
     loadComponent: () => import('./components/calculate-order/calculate-order.component').then(m => m.CalculateOrderComponent)
   },
   {
-    path: 'users/me/orders',
+    path: 'user/orders',
     loadComponent: () => import('./components/history/history.component').then(m => m.HistoryComponent),
     canActivate: [AuthGuard],
   },
   {
-    path: 'users/me/orders/:tracker/changes',
+    path: 'user/orders/:tracker/changes',
     loadComponent: () => import('./components/history-changes/history-changes.component').then(m => m.HistoryChangesComponent),
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'user/order/:tracker',
+    loadComponent: () => import('./components/order/order.component').then(m => m.OrderComponent)
   }
 ];

@@ -1,29 +1,23 @@
 import {AfterViewInit, Component, input, NgZone, OnDestroy, OnInit, output} from '@angular/core';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 import {PointService} from '../../_services/location/point.service';
 import {GeoService} from '../../_services/yMap/geo.service';
-import {finalize, forkJoin, Subject, takeUntil} from 'rxjs';
-import {ScrollerModule} from 'primeng/scroller';
-import {Card} from 'primeng/card';
+import {finalize, Subject, takeUntil} from 'rxjs';
 import {CompanyPointDTO} from '../../_models/pointDTO';
-import {NgIf} from '@angular/common';
 import {ClusterDTO} from '../../_models/clusterDTO';
-import {Dialog} from 'primeng/dialog';
-import {Button} from 'primeng/button';
 import {Coordinates} from '../../_models/coordinates';
 import {getPointTypeLabel} from '../../_enums/point-type.enum';
-import {ConfirmPopup} from 'primeng/confirmpopup';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
+import {NgIf} from '@angular/common';
+import {Skeleton} from 'primeng/skeleton';
 
 @Component({
   selector: 'app-map-choice',
   imports: [
-    Button,
-    Dialog,
-    Card,
-    ConfirmPopup,
-    ConfirmDialog
+    ConfirmDialog,
+    NgIf,
+    Skeleton
   ],
   templateUrl: './map-choice.component.html',
   styleUrl: './map-choice.component.scss'
@@ -35,14 +29,10 @@ export class MapChoiceComponent implements OnInit, AfterViewInit, OnDestroy {
   clusters: ClusterDTO[] = [];
   selectedPoint!: CompanyPointDTO;
   isChild: boolean = false;
-  selectedClusterId!: number;
-  lazyLoading: boolean = true
-  loadLazyTimeout: any;
-  totalRecords: number = 0;
   private map: any;
   private ymaps = (window as any).ymaps;
   private center: Coordinates = {latitude: 55.0415, longitude: 82.9346};
-  loading: boolean = false;
+  loadingMap: boolean = true;
   pointDialog: boolean = false;
 
   constructor(private pointService: PointService, private fb: FormBuilder, private ngZone: NgZone, private geoService: GeoService,private confirmationService: ConfirmationService, private messageService: MessageService) {
@@ -81,6 +71,7 @@ export class MapChoiceComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       this.addMarkers();
     });
+    this.loadingMap=false;
   }
 
 
