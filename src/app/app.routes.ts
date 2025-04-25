@@ -39,6 +39,10 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'confirm-email',
+    loadComponent: () => import('./components/confirm-email/confirm-email.component').then(m => m.ConfirmEmailComponent)
+  },
+  {
     path: 'user',
     loadComponent: () => import('./components/personal-info/personal-info.component').then(m => m.PersonalInfoComponent),
     canActivate: [AuthGuard],

@@ -1,0 +1,13 @@
+<div class="container  flex justify-content-center flex-wrap">
+  <p-card styleClass="w-max" header="Подтвеждение почты">
+   <div *ngIf="success===null">
+     <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
+   </div>
+    <div *ngIf="success===true">
+      <p-tag severity="success" value="Аккаунт подтвержден" icon="pi pi-check"></p-tag>
+    </div>
+    <div *ngIf="success===false">
+      <p-tag severity="danger" value="Произошла ошибка" icon="pi pi-times"></p-tag>
+    </div>
+  </p-card>
+</div>

@@ -56,7 +56,16 @@ export class AuthService {
       catchError((error) => throwError(() => error))
     );
   }
-
+  sendEmailConfirmation(): Observable<void> {
+    return this.http.get<void>(`${environment.apiUrl}/user-auth/confirm-email`).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+  confirmEmail(data: { sub: string,token:string }): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/user-auth/confirm-email`,data).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 
   logout(): Observable<void> {
     return this.http.post<void>(

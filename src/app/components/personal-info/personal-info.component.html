@@ -33,7 +33,9 @@
         <p-button styleClass="p-0" label="{{payload.emailVerified ? 'Аккаунт подтвержден' : 'Аккаунт не подтвежден'}}"
                   variant="text"
                   link="{{payload.emailVerified ? 'false' : 'true'}}"
-                  [severity]="payload.emailVerified ? 'success' : 'warn'"/>
+                  [severity]="payload.emailVerified ? 'success' : 'warn'"
+                  (click)="sendEmailConfirmation()"
+        />
       </p-card>
     </div>
     <div class="mt-2">

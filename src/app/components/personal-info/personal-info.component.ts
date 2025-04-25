@@ -25,10 +25,6 @@ import {MessageService} from 'primeng/api';
     InputText,
     ReactiveFormsModule,
     FloatLabel,
-    Tag,
-    NgIf,
-    Password,
-    Tooltip
   ],
   templateUrl: './personal-info.component.html',
   styleUrl: './personal-info.component.scss'
@@ -88,7 +84,23 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
   }
 
   sendEmailConfirmation() {
-
+    if(this.payload.emailVerified)
+      return;
+    this.auth.sendEmailConfirmation().pipe(
+      takeUntil(this.destroy$)
+      , finalize(() => {})
+    ).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Успех',
+          detail: 'Письмо подтверждения отправлено',
+          life: 5000
+        });
+      },
+      error: () => {
+      }
+    });
   }
 
   resendConfirmation() {

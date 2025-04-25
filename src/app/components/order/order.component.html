@@ -3,8 +3,8 @@
     <p-card header="Отслеживание">
 
         <div *ngIf="loading" class="skeleton-container">
-            <p-skeleton width="120px" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            <p-skeleton width="120px" styleClass="mb-2" height="1.5rem"></p-skeleton>
+            <p-skeleton width="120%" styleClass="mb-2" height="1.5rem"></p-skeleton>
+            <p-skeleton width="120%" styleClass="mb-2" height="1.5rem"></p-skeleton>
             <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
             <p-skeleton width="80%" styleClass="mb-2" height="1.5rem"></p-skeleton>
             <div class="mt-4">
@@ -12,7 +12,7 @@
                 <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
             </div>
         </div>
-        <div *ngIf="!loading">
+        <div *ngIf="!loading &&order">
             <div>
                 <p><strong>Трек номер:</strong> {{order.tracker}}</p>
                 <p><strong>Статус:</strong>
@@ -28,5 +28,8 @@
                 <p><strong>Адрес получения:</strong> {{ order.receiverAddress }}</p>
             </div>
         </div>
+      <div *ngIf="!loading &&!order">
+        <p><strong>Заказ не найден</strong></p>
+      </div>
     </p-card>
 </div>
