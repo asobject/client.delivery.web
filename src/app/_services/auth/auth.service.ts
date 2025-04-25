@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { StorageService } from '../storage/storage.service';
-import { environment } from '../../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {StorageService} from '../storage/storage.service';
+import {environment} from '../../../environments/environment';
 import {catchError} from 'rxjs/operators';
 import {finalize, map, Observable, throwError} from 'rxjs';
 
@@ -14,13 +14,14 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private storageService: StorageService
-  ) {}
+  ) {
+  }
 
   login(data: { email: string; password: string }): Observable<string> {
     return this.http.post<{ accessToken: string }>(
       `${environment.apiUrl}/user-auth/login`,
       data,
-      { withCredentials: true }
+      {withCredentials: true}
     ).pipe(
       map(response => this.parseLogin(response)),
       catchError(err => {
@@ -40,27 +41,31 @@ export class AuthService {
 
   register(data: { firstName: string; email: string; password: string }): Observable<void> {
     return this.http.post<void>(`${environment.apiUrl}/user-auth/register`, data).pipe(
-      map(() => undefined), // Явно указываем, что ничего не возвращаем
-      catchError(err => {
-        console.error('Registration failed:', err.message);
-        return throwError(() => new Error('Registration failed. Please try again.'));
-      })
+      catchError((error) => throwError(() => error))
     );
   }
 
+  editFirstName(newFirstName: string): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/user-auth/first-name`, {NewFirstName:newFirstName}).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 
+  editLastName(newLastName: string): Observable<void> {
+    return this.http.patch<void>(`${environment.apiUrl}/user-auth/last-name`, {NewLastName:newLastName}).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 
 
   logout(): Observable<void> {
     return this.http.post<void>(
       `${environment.apiUrl}/user-auth/logout`,
       {},
-      { withCredentials: true }
+      {withCredentials: true}
     ).pipe(
       finalize(() => this.forceLogout()),
-      catchError(error => {
-        return throwError(() => error);
-      })
+      catchError((error) => throwError(() => error))
     );
   }
 

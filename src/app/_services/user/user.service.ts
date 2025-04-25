@@ -25,5 +25,4 @@ export class UserService {
   isAuthenticated(): boolean {
     return !!this.storageService.accessToken;  // Проверяем наличие accessToken
   }
-
 }

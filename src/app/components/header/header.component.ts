@@ -61,6 +61,11 @@ export class HeaderComponent implements OnInit {
         label: 'Профиль',
         items: [
           {
+            label: 'Личный кабинет',
+            icon: 'pi pi-user',
+            routerLink: '/user'
+          },
+          {
             label: 'Ваши доставки',
             icon: 'pi pi-truck',
             routerLink: '/user/orders'
