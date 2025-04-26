@@ -2,7 +2,9 @@
   <p-card header="Отследить посылку">
     <form [formGroup]="trackingForm" (ngSubmit)="submit()">
 
-      <p-button label="Где найти номер заказа?" styleClass="pl-0" link="true"/>
+      <p-button label="Где найти номер заказа?" pTooltip="Номер заказа можно найти в email или в личном кабинете"
+                tooltipEvent="focus"
+                tooltipPosition="top" styleClass="pl-0" link="true"/>
       <div class="tracking-input-group">
         <p-input-group>
           <p-floatlabel variant="in">

@@ -7,13 +7,11 @@ import {Button} from 'primeng/button';
 import {InputText} from 'primeng/inputtext';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {FloatLabel} from 'primeng/floatlabel';
-import {Tag} from 'primeng/tag';
-import {NgIf} from '@angular/common';
-import {Password} from 'primeng/password';
-import {Tooltip} from 'primeng/tooltip';
 import {AuthService} from '../../_services/auth/auth.service';
 import {finalize, Subject, takeUntil} from 'rxjs';
 import {MessageService} from 'primeng/api';
+import {Dialog} from 'primeng/dialog';
+import {ChangePasswordComponent} from '../change-password/change-password.component';
 
 @Component({
   selector: 'app-personal-info',
@@ -25,6 +23,8 @@ import {MessageService} from 'primeng/api';
     InputText,
     ReactiveFormsModule,
     FloatLabel,
+    Dialog,
+    ChangePasswordComponent,
   ],
   templateUrl: './personal-info.component.html',
   styleUrl: './personal-info.component.scss'
@@ -35,6 +35,7 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
   personalForm!: FormGroup;
   loadingFirstName:boolean = false;
   loadingLastName:boolean = false;
+  changePasswordDialog:boolean = false;
   constructor(private jwtService: JwtService,private  fb: FormBuilder,private  auth: AuthService,private  messageService: MessageService) {
   }
   ngOnInit() {
@@ -46,6 +47,9 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
   }
 
   editFirstName() {
+    if(this.payload.firstName === this.personalForm.get('firstName')?.value){
+      return;
+    }
     this.loadingFirstName = true;
     this.auth.editFirstName(this.personalForm.get('firstName')?.value).pipe(
       takeUntil(this.destroy$)
@@ -55,7 +59,7 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
         this.messageService.add({
           severity: 'success',
           summary: 'Успех',
-          detail: 'Имя измено, изменения вступять в слиу совсем скоро',
+          detail: 'Имя измено, изменения вступят в силу совсем скоро',
           life: 5000
         });
       },
@@ -65,6 +69,9 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
   }
 
   editLastName() {
+    if(this.payload.lastName === this.personalForm.get('lastName')?.value){
+      return;
+    }
     this.loadingLastName = true;
     this.auth.editLastName( this.personalForm.get('lastName')?.value).pipe(
       takeUntil(this.destroy$)
@@ -74,7 +81,7 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
         this.messageService.add({
           severity: 'success',
           summary: 'Успех',
-          detail: 'Фамилия измена, изменения вступять в слиу совсем скоро',
+          detail: 'Фамилия измена, изменения вступят в силу совсем скоро',
           life: 5000
         });
       },
@@ -102,12 +109,18 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  hideChangePasswordDialog() {
+    this.changePasswordDialog = false;
+  }
   resendConfirmation() {
 
   }
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  changePassword() {
+    this.changePasswordDialog = true;
   }
 }

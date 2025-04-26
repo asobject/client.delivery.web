@@ -50,5 +50,15 @@ export const routes: Routes = [
   {
     path: 'user/order/:tracker',
     loadComponent: () => import('./components/order/order.component').then(m => m.OrderComponent)
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./components/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
+    canActivate: [NonAuthGuard]
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./components/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+    canActivate: [NonAuthGuard]
   }
 ];

@@ -66,7 +66,22 @@ export class AuthService {
       catchError((error) => throwError(() => error))
     );
   }
+  changePassword(data:{currentPassword:string,newPassword:string}): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/user-auth/change-password`,data).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
+  forgotPassword(data:{email:string}): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/user-auth/forgot-password`,data).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
 
+  resetPassword(data:{sub:string,token:string,newPassword:string}): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/user-auth/reset-password`,data).pipe(
+      catchError((error) => throwError(() => error))
+    );
+  }
   logout(): Observable<void> {
     return this.http.post<void>(
       `${environment.apiUrl}/user-auth/logout`,

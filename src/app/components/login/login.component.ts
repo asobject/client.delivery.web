@@ -8,8 +8,8 @@ import {StorageService} from '../../_services/storage/storage.service';
 import {Router, RouterLink} from '@angular/router';
 import {Card} from 'primeng/card';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Subject, takeUntil} from 'rxjs';
-import {ConfirmationService, MessageService} from 'primeng/api';
+import {finalize, Subject, takeUntil} from 'rxjs';
+import {Password} from 'primeng/password';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +22,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
     ReactiveFormsModule,
     Button,
     RouterLink,
+    Password,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -29,9 +30,9 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 export class LoginComponent implements OnDestroy {
   loginForm: FormGroup;
   private destroy$: Subject<void> = new Subject<void>();
+  loading: boolean = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private messageService: MessageService,
-              private confirmationService: ConfirmationService, private storageService: StorageService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private storageService: StorageService, private router: Router) {
     this.loginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required, Validators.minLength(6)]]
@@ -46,8 +47,9 @@ export class LoginComponent implements OnDestroy {
   }
 
   login(email: string, password: string): void {
+    this.loading = true;
     this.authService.login({email, password}).pipe(
-      takeUntil(this.destroy$) // Отписываемся при уничтожении компонента
+      takeUntil(this.destroy$),finalize(()=>this.loading = false),
     ).subscribe({
       next: (token) => {
         this.storageService.setAccessToken(token);
@@ -62,5 +64,10 @@ export class LoginComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  openForgotPassword() {
+    const url = this.router.createUrlTree([`forgot-password`]).toString();
+    window.open(url, '_blank');
   }
 }

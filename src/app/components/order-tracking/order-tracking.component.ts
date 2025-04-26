@@ -6,6 +6,7 @@ import {InputGroup} from "primeng/inputgroup";
 import {InputText} from "primeng/inputtext";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
+import {Tooltip} from 'primeng/tooltip';
 
 @Component({
   selector: 'app-order-tracking',
@@ -16,7 +17,8 @@ import {Router} from '@angular/router';
     FloatLabel,
     InputGroup,
     InputText,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Tooltip
   ],
   templateUrl: './order-tracking.component.html',
   styleUrl: './order-tracking.component.scss'

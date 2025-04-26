@@ -7,8 +7,9 @@ import {InputText} from 'primeng/inputtext';
 import {Ripple} from 'primeng/ripple';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../_services/auth/auth.service';
-import {Subject, takeUntil} from 'rxjs';
+import {finalize, Subject, takeUntil} from 'rxjs';
 import {NgClass} from '@angular/common';
+import {Password} from 'primeng/password';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,8 @@ import {NgClass} from '@angular/common';
     ReactiveFormsModule,
     Ripple,
     RouterLink,
-    NgClass
+    NgClass,
+    Password
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -30,6 +32,7 @@ import {NgClass} from '@angular/common';
 export class RegisterComponent implements OnDestroy {
   registerForm: FormGroup;
   private destroy$: Subject<void> = new Subject<void>();
+  loading = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
@@ -37,7 +40,7 @@ export class RegisterComponent implements OnDestroy {
       email: [null, [Validators.required, Validators.email]],
       password: [null, [Validators.required, Validators.minLength(6)]],
       confirmPassword: [null, [Validators.required, Validators.minLength(6)]]
-    }, { validator: this.passwordsMatch });
+    }, {validator: this.passwordsMatch});
   }
 
   private passwordsMatch(group: FormGroup) {
@@ -51,11 +54,11 @@ export class RegisterComponent implements OnDestroy {
     if (this.registerForm.invalid) {
       return;
     }
-
-    const { firstName, email, password } = this.registerForm.value;
-    this.authService.register({ firstName, email, password })
+    this.loading = true;
+    const {firstName, email, password} = this.registerForm.value;
+    this.authService.register({firstName, email, password})
       .pipe(
-        takeUntil(this.destroy$) // Отписываемся при уничтожении компонента
+        takeUntil(this.destroy$), finalize(() => this.loading = false)
       )
       .subscribe({
         next: () => {

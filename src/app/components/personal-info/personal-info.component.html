@@ -42,16 +42,23 @@
 
       <p-card header="Безопасность">
         <div class="flex flex-column">
+<!--          <div class="flex align-items-center justify-content-center w-full">-->
+<!--            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" label="Изменить почту"/>-->
+<!--          </div>-->
           <div class="flex align-items-center justify-content-center w-full">
-
-            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" label="Изменить почту"/>
-          </div>
-          <div class="flex align-items-center justify-content-center w-full">
-            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" label="Изменить пароль"/>
+            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" (click)="changePassword()" label="Изменить пароль"/>
           </div>
         </div>
       </p-card>
     </div>
-
   </div>
+  <p-dialog [(visible)]="changePasswordDialog" styleClass="w-max" draggable="false" header="Измените данные"
+            (onHide)="hideChangePasswordDialog()"
+            [modal]="true">
+    <ng-template #content>
+      <div>
+        <app-change-password></app-change-password>
+      </div>
+    </ng-template>
+  </p-dialog>
 </div>
