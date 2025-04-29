@@ -12,6 +12,8 @@ import {finalize, Subject, takeUntil} from 'rxjs';
 import {MessageService} from 'primeng/api';
 import {Dialog} from 'primeng/dialog';
 import {ChangePasswordComponent} from '../change-password/change-password.component';
+import {NgIf} from '@angular/common';
+import {Tag} from 'primeng/tag';
 
 @Component({
   selector: 'app-personal-info',
@@ -25,6 +27,8 @@ import {ChangePasswordComponent} from '../change-password/change-password.compon
     FloatLabel,
     Dialog,
     ChangePasswordComponent,
+    NgIf,
+    Tag,
   ],
   templateUrl: './personal-info.component.html',
   styleUrl: './personal-info.component.scss'
@@ -91,8 +95,6 @@ export class PersonalInfoComponent implements OnInit, OnDestroy {
   }
 
   sendEmailConfirmation() {
-    if(this.payload.emailVerified)
-      return;
     this.auth.sendEmailConfirmation().pipe(
       takeUntil(this.destroy$)
       , finalize(() => {})

@@ -10,7 +10,16 @@
   </ng-template>
 
   <ng-template #end>
-
+<div class="flex items-center gap-2" >
+  <button
+    pButton
+    size="small"
+    severity="primary"
+    icon="pi pi-question"
+    label="Помощь"
+    class="p-button-rounded"
+    routerLink="/support"
+  ></button>
     <div *ngIf="!userService.isAuthenticated()">
       <p-button
         size="small"
@@ -33,5 +42,6 @@
       (click)="menu.toggle($event)"
     ></button>
     </div>
+</div>
   </ng-template>
 </p-menubar>

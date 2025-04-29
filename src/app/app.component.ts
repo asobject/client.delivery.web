@@ -10,7 +10,7 @@ import { ConfirmPopupModule} from 'primeng/confirmpopup';
   imports: [RouterOutlet, HeaderComponent, Toast],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  providers: [ ToastModule,MessageService,ConfirmPopupModule, ConfirmationService ]
+  providers: [ ToastModule,MessageService,ConfirmPopupModule, ConfirmationService]
 })
 export class AppComponent {
   title = 'MyDelivery';

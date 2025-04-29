@@ -1,6 +1,6 @@
 <div class="container flex justify-content-center flex-wrap">
   <div class="w-max">
-    <p-card class="" header="Личная информация">
+    <p-card  header="Личная информация">
       <form [formGroup]="personalForm">
         <p-inputgroup styleClass="w-fill">
           <p-floatlabel variant="in">
@@ -30,10 +30,11 @@
     </p-card>
     <div class="mt-2">
       <p-card header="Подтвеждение аккаунта">
-        <p-button styleClass="p-0" label="{{payload.emailVerified ? 'Аккаунт подтвержден' : 'Аккаунт не подтвежден'}}"
+        <p-tag *ngIf="payload.emailVerified"  [style]="{background: 'transparent'}" styleClass="px-0"  value="Аккаунт подтвежден"></p-tag>
+        <p-button *ngIf="!payload.emailVerified" styleClass="p-0" label="Аккаунт не подтвежден"
                   variant="text"
-                  link="{{payload.emailVerified ? 'false' : 'true'}}"
-                  [severity]="payload.emailVerified ? 'success' : 'warn'"
+                  link="true"
+                  severity="warn"
                   (click)="sendEmailConfirmation()"
         />
       </p-card>

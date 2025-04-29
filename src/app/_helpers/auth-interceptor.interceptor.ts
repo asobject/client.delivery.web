@@ -31,7 +31,6 @@ export class AuthInterceptor implements HttpInterceptor {
     if (this.isExcluded(req.url)) {
       return next.handle(req);
     }
-
     const authReq = this.addAuthHeader(reqWithCookies);
     return next.handle(authReq);
   }
