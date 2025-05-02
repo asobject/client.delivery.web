@@ -8,8 +8,10 @@ import {Ripple} from 'primeng/ripple';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../_services/auth/auth.service';
 import {finalize, Subject, takeUntil} from 'rxjs';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import {Password} from 'primeng/password';
+import {Message} from 'primeng/message';
+import {MessageService} from 'primeng/api';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +26,9 @@ import {Password} from 'primeng/password';
     Ripple,
     RouterLink,
     NgClass,
-    Password
+    Password,
+    Message,
+    NgIf
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -33,8 +37,9 @@ export class RegisterComponent implements OnDestroy {
   registerForm: FormGroup;
   private destroy$: Subject<void> = new Subject<void>();
   loading = false;
+  loginAlreadyExists = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router,private  messageService: MessageService) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       email: [null, [Validators.required, Validators.email]],
@@ -46,7 +51,6 @@ export class RegisterComponent implements OnDestroy {
   private passwordsMatch(group: FormGroup) {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
-    console.log(password === confirmPassword);
     return password === confirmPassword ? null : {mismatch: true};
   }
 
@@ -62,10 +66,16 @@ export class RegisterComponent implements OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.router.navigate(['/']).then();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Успех',
+            detail: 'Учетная запись создана',
+            life: 3000
+          });
+          this.router.navigate(['/login']).then();
         },
         error: (err) => {
-          console.error(err.message);
+          this.loginAlreadyExists = err.error.type === "AlreadyExistsException";
         }
       });
   }

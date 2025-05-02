@@ -68,7 +68,7 @@ export class TokenRefreshInterceptor implements HttpInterceptor {
     this.isRefreshing = true;
     this.refreshTokenSubject.next(null);
 
-    return this.refreshAccessToken().pipe(
+    return this.authService.refresh().pipe(
       switchMap(accessToken => this.retryRequest(request, next, accessToken)),
       catchError(error => {
         return throwError(() => error);
@@ -77,26 +77,6 @@ export class TokenRefreshInterceptor implements HttpInterceptor {
     );
   }
 
-  private refreshAccessToken(): Observable<string> {
-    return this.injector.get(HttpClient)
-      .put<{ accessToken: string }>(
-        `${environment.apiUrl}/user-auth/refresh`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${this.storageService.accessToken}`,
-          },
-          withCredentials: true,
-        }
-      ).pipe(
-        tap(response => this.storageService.setAccessToken(response.accessToken)),
-        map(response => response.accessToken),
-        catchError(error => {
-          this.authService.forceLogout();
-          return throwError(() => error);
-        })
-      );
-  }
 
   private retryRequest(
     request: HttpRequest<unknown>,

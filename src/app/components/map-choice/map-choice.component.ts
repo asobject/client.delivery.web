@@ -11,13 +11,15 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {NgIf} from '@angular/common';
 import {Skeleton} from 'primeng/skeleton';
+import {Button} from 'primeng/button';
 
 @Component({
   selector: 'app-map-choice',
   imports: [
     ConfirmDialog,
     NgIf,
-    Skeleton
+    Skeleton,
+    Button
   ],
   templateUrl: './map-choice.component.html',
   styleUrl: './map-choice.component.scss'
@@ -33,7 +35,7 @@ export class MapChoiceComponent implements OnInit, AfterViewInit, OnDestroy {
   private ymaps = (window as any).ymaps;
   private center: Coordinates = {latitude: 55.0415, longitude: 82.9346};
   loadingMap: boolean = true;
-  pointDialog: boolean = false;
+  loadingPoint: boolean = false;
 
   constructor(private pointService: PointService, private fb: FormBuilder, private ngZone: NgZone, private geoService: GeoService,private confirmationService: ConfirmationService, private messageService: MessageService) {
 
@@ -104,107 +106,30 @@ export class MapChoiceComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleMarkerClick(clusterId: number): void {
+    this.loadingPoint=true;
+    this.confirmationService.confirm({
+      header: 'Подтверждение',
+      rejectVisible: false,
+      acceptVisible: false
+    });
     this.pointService.getPoint(clusterId).pipe(
-      takeUntil(this.destroy$)
+      takeUntil(this.destroy$),
+      finalize(() => this.loadingPoint=false)
     ).subscribe({
       next: (data) => {
        this.selectedPoint=data;
-        this.confirmationService.confirm({
-          header: 'Подтверждение',
-          acceptLabel: 'Выбрать',
-          rejectVisible: false,
-          accept: () => {
-            this.dataOutput.emit(this.selectedPoint);
-          },
-        });
       },
       error: (err) => console.error(err)
     });
   }
-
-
-  hideDialog() {
-    this.pointDialog = false;
-  }
-
-
-  //
-  // onLazyLoad(event: LazyEvent) {
-  //   this.lazyLoading = true;
-  //
-  //   if (this.loadLazyTimeout) {
-  //     clearTimeout(this.loadLazyTimeout);
-  //   }
-  //
-  //   this.pointService.getPoints(event.first + 1, 2).pipe(
-  //     takeUntil(this.destroy$),
-  //     finalize(() => {
-  //       this.lazyLoading = false;
-  //     })
-  //   ).subscribe({
-  //     next: (result) => {
-  //       this.points = this.points.concat(result.data);
-  //       this.totalRecords = result.totalRecords;
-  //     },
-  //     error: () => {
-  //     }
-  //   });
-  // }
-
-  // onPointSelect(event: any) {
-  //   // event.value содержит выбранный элемент
-  //   const selectedItem = event.value as PointDTO;
-  //   // Выполните зум на карте по координатам выбранного элемента
-  //   if (selectedItem) {
-  //     this.setCenter(selectedItem.coordinates.latitude, selectedItem.coordinates.longitude);
-  //   }
-  // }
-
-  // private loadOffices(): void {
-  //   this.officeService.getOffices().pipe(
-  //     catchError((err) => {
-  //       console.error('Failed to load offices:', err.message);
-  //       this.isLoading = false;
-  //       return of([]); // Возвращаем пустой массив при ошибке
-  //     })
-  //   ).subscribe({
-  //     next: (points) => {
-  //       // this.points = points; // Сохраняем полученные офисы
-  //       this.isLoading = false;
-  //       this.initMap();
-  //     }
-  //   });
-  // }
-
-
-  // selectOffice() {
-  //   this.dataOutput.emit(this.office?.value);
-  // }
-
-  private setCenter(lat: number, lng: number) {
-    this.map.setCenter([lat, lng], 15, {
-      duration: 500,
-      checkZoomRange: false
-    });
-    // this.map.panTo([lat, lng], {
-    //   flying: true, // Включает анимацию
-    //   duration: 500,
-    // });
-  }
-
-  closeForm() {
-    //this.point?.setValue(null);
-  }
-
-  // clickListOffices(office: Office): void {
-  //   this.setCenter(office.location.latitude, office.location.longitude);
-  // }
-
-
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   protected readonly getPointTypeLabel = getPointTypeLabel;
+
+  onAccept() {
+    this.dataOutput.emit(this.selectedPoint);
+  }
 }

@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {StorageService} from '../storage/storage.service';
 import {environment} from '../../../environments/environment';
-import {catchError} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {finalize, map, Observable, throwError} from 'rxjs';
 
 @Injectable({
@@ -24,10 +24,7 @@ export class AuthService {
       {withCredentials: true}
     ).pipe(
       map(response => this.parseLogin(response)),
-      catchError(err => {
-        console.error('Login failed:', err.message);
-        return throwError(() => new Error('Login failed. Please check your credentials.'));
-      })
+      catchError((error) => throwError(() => error))
     );
   }
 
@@ -76,7 +73,26 @@ export class AuthService {
       catchError((error) => throwError(() => error))
     );
   }
-
+refresh(){
+  return this.http
+    .put<{ accessToken: string }>(
+      `${environment.apiUrl}/user-auth/refresh`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${this.storageService.accessToken}`,
+        },
+        withCredentials: true,
+      }
+    ).pipe(
+      tap(response => this.storageService.setAccessToken(response.accessToken)),
+      map(response => response.accessToken),
+      catchError(error => {
+        this.forceLogout();
+        return throwError(() => error);
+      })
+    );
+}
   resetPassword(data:{sub:string,token:string,newPassword:string}): Observable<void> {
     return this.http.post<void>(`${environment.apiUrl}/user-auth/reset-password`,data).pipe(
       catchError((error) => throwError(() => error))

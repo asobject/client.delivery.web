@@ -1,28 +1,34 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GeoService } from '../../_services/yMap/geo.service';
-import { Card } from 'primeng/card';
-import { Step, StepList, StepPanel, StepPanels, Stepper } from 'primeng/stepper';
-import { Button, ButtonDirective } from 'primeng/button';
-import { RadioButton } from 'primeng/radiobutton';
-import { forkJoin, Subject, takeUntil } from 'rxjs';
-import { NgIf } from '@angular/common';
-import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
-import { FloatLabel } from 'primeng/floatlabel';
-import { Coordinates } from '../../_models/coordinates';
-import { CompanyPointDTO } from '../../_models/pointDTO';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
-import { OrderService } from '../../_services/order/order.service';
-import { CreateOrderCommand } from '../../_models/create-order-command';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { UserService } from '../../_services/user/user.service';
-import { DeliveryMethod, getDeliveryMethodLabel } from '../../_enums/delivery-method.enum';
-import { getPaymentTypeLabel, PaymentType } from '../../_enums/payment-type.enum';
-import { CalculateOrderQuery } from '../../_models/calculate-order-query';
-import { getPackageSizeLabel } from '../../_enums/package-size.enum';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {GeoService} from '../../_services/yMap/geo.service';
+import {Card} from 'primeng/card';
+import {Step, StepList, StepPanel, StepPanels, Stepper} from 'primeng/stepper';
+import {Button, ButtonDirective} from 'primeng/button';
+import {RadioButton} from 'primeng/radiobutton';
+import {finalize, forkJoin, Subject, takeUntil} from 'rxjs';
+import {NgIf} from '@angular/common';
+import {
+  AutoComplete,
+  AutoCompleteCompleteEvent,
+  AutoCompleteSelectEvent,
+  AutoCompleteUnselectEvent
+} from 'primeng/autocomplete';
+import {FloatLabel} from 'primeng/floatlabel';
+import {Coordinates} from '../../_models/coordinates';
+import {CompanyPointDTO} from '../../_models/pointDTO';
+import {Dialog} from 'primeng/dialog';
+import {InputText} from 'primeng/inputtext';
+import {OrderService} from '../../_services/order/order.service';
+import {CreateOrderCommand} from '../../_models/create-order-command';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {UserService} from '../../_services/user/user.service';
+import {DeliveryMethod, getDeliveryMethodLabel} from '../../_enums/delivery-method.enum';
+import {getPaymentTypeLabel, PaymentType} from '../../_enums/payment-type.enum';
+import {CalculateOrderQuery} from '../../_models/calculate-order-query';
+import {getPackageSizeLabel} from '../../_enums/package-size.enum';
 import {MapChoiceComponent} from '../map-choice/map-choice.component';
+import {Skeleton} from 'primeng/skeleton';
 
 @Component({
   selector: 'app-calculate-order',
@@ -43,7 +49,8 @@ import {MapChoiceComponent} from '../map-choice/map-choice.component';
     Dialog,
     InputText,
     ButtonDirective,
-    MapChoiceComponent
+    MapChoiceComponent,
+    Skeleton
   ],
   templateUrl: './calculate-order.component.html',
   styleUrls: ['./calculate-order.component.scss']
@@ -51,6 +58,10 @@ import {MapChoiceComponent} from '../map-choice/map-choice.component';
 export class CalculateOrderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   private queryParams: any;
+
+  isInitialize: boolean=false;
+  isCalculatingOrder: boolean=false;
+  isCreatingOrder: boolean=false;
 
   deliveryForm!: FormGroup;
   calculationForm!: FormGroup;
@@ -86,7 +97,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/']).then();
         return;
       }
-      this.queryParams = { ...data, packageSize };
+      this.queryParams = {...data, packageSize};
     });
 
     this.initializeForms();
@@ -94,14 +105,15 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isInitialize = true;
     // Загрузка начальных геоданных
     forkJoin({
       startPoint: this.geoService.getGeocode(this.queryParams?.startPoint),
       endPoint: this.geoService.getGeocode(this.queryParams?.endPoint)
     })
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),finalize(() => {this.isInitialize=false}))
       .subscribe({
-        next: ({ startPoint, endPoint }) => {
+        next: ({startPoint, endPoint}) => {
           this.startCoordinates = startPoint.coordinates;
           this.endCoordinates = endPoint.coordinates;
         },
@@ -123,13 +135,13 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
     });
 
     this.calculationForm = this.fb.group({
-      sendLocation: [{ value: this.queryParams?.startPoint, disabled: true }, Validators.required],
-      receiveLocation: [{ value: this.queryParams?.endPoint, disabled: true }, Validators.required],
+      sendLocation: [{value: this.queryParams?.startPoint, disabled: true}, Validators.required],
+      receiveLocation: [{value: this.queryParams?.endPoint, disabled: true}, Validators.required],
       packageSize: [{
         value: getPackageSizeLabel(this.queryParams?.packageSize),
         disabled: true
       }, Validators.required],
-      totalCost: [{ value: null, disabled: true }, Validators.required]
+      totalCost: [{value: null, disabled: true}, Validators.required]
     });
 
     this.bufForm = this.fb.group({
@@ -141,14 +153,6 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   }
 
   private initializeFormListeners(): void {
-    // При изменении способа отправки/получения сбрасываем соответствующие поля
-    this.deliveryForm.get('sendMethod')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.resetPoint('startPoint'));
-    this.deliveryForm.get('receiveMethod')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.resetPoint('endPoint'));
-
     // Обновляем буферные формы при изменении платежного метода и email
     this.deliveryForm.get('paymentMethod')?.valueChanges
       .pipe(takeUntil(this.destroy$))
@@ -171,7 +175,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
       });
   }
 
-  private resetPoint(field: string): void {
+  resetPoint(field: string): void {
     this.deliveryForm.get(field)?.reset();
     this.bufForm.get(field)?.reset();
   }
@@ -185,6 +189,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   }
 
   calculateOrder(): void {
+   this.isCalculatingOrder=true;
     this.calculateOrderQuery = {
       senderDeliveryMethod: this.deliveryForm.get('sendMethod')?.value,
       receiverDeliveryMethod: this.deliveryForm.get('receiveMethod')?.value,
@@ -193,9 +198,9 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
       senderPointCoordinates: this.bufForm.get('startPoint')?.value['coordinates'],
       receiverPointCoordinates: this.bufForm.get('endPoint')?.value['coordinates']
     };
-
+    this.calculationForm.get('totalCost')?.setValue("Идет расчет...");
     this.orderService.calculatePrice(this.calculateOrderQuery)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),finalize(() => {this.isCalculatingOrder=false}))
       .subscribe({
         next: (data) => {
           this.calculationForm.get('totalCost')?.setValue(data);
@@ -265,6 +270,17 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
 
   // Отправка заказа
   submit(): void {
+    if (
+      this.deliveryForm.invalid && this.bufForm.invalid
+    ) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Ошибка',
+        detail: 'Для оформления нужно заполнить форму',
+        life: 5000
+      });
+      return;
+    }
     if (!this.userService.isAuthenticated()) {
       this.confirmationService.confirm({
         message: 'Для оформления нужно быть авторизованным.',
@@ -276,7 +292,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
       });
       return;
     }
-
+    this.isCreatingOrder = true;
     this.createOrderCommand = {
       price: this.calculationForm.get('totalCost')?.value,
       paymentType: this.paymentMethod,
@@ -293,7 +309,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
     };
 
     this.orderService.createOrder(this.createOrderCommand)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),finalize(()=>this.isCreatingOrder = false))
       .subscribe({
         next: () => {
           this.router.navigate(['/']).then();
@@ -335,5 +351,13 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  onUnselect(isSender: boolean) {
+    if (isSender) {
+      this.bufForm.get('startPoint')?.reset();
+    } else {
+      this.bufForm.get('endPoint')?.reset();
+    }
   }
 }

@@ -2,15 +2,8 @@
 
     <p-card header="Отслеживание">
 
-        <div *ngIf="loading" class="skeleton-container">
-            <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            <p-skeleton width="80%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            <div class="mt-4">
-                <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-                <p-skeleton width="100%" styleClass="mb-2" height="1.5rem"></p-skeleton>
-            </div>
+        <div *ngIf="loading">
+            <p-skeleton width="100%" styleClass="mb-1" height="11.75rem"></p-skeleton>
         </div>
         <div *ngIf="!loading &&order">
             <div>

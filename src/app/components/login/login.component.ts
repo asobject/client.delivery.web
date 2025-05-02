@@ -10,6 +10,8 @@ import {Card} from 'primeng/card';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {finalize, Subject, takeUntil} from 'rxjs';
 import {Password} from 'primeng/password';
+import {Message} from 'primeng/message';
+import {NgClass, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +25,9 @@ import {Password} from 'primeng/password';
     Button,
     RouterLink,
     Password,
+    Message,
+    NgClass,
+    NgIf,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -31,6 +36,8 @@ export class LoginComponent implements OnDestroy {
   loginForm: FormGroup;
   private destroy$: Subject<void> = new Subject<void>();
   loading: boolean = false;
+  loginNotFound: boolean = false;
+  passwordIncorrect: boolean = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private storageService: StorageService, private router: Router) {
     this.loginForm = this.fb.group({
@@ -49,13 +56,15 @@ export class LoginComponent implements OnDestroy {
   login(email: string, password: string): void {
     this.loading = true;
     this.authService.login({email, password}).pipe(
-      takeUntil(this.destroy$),finalize(()=>this.loading = false),
+      takeUntil(this.destroy$), finalize(() => this.loading = false),
     ).subscribe({
       next: (token) => {
         this.storageService.setAccessToken(token);
         this.router.navigate(['/']).then();
       },
-      error: () => {
+      error: (err) => {
+        this.loginNotFound = err.error.type === "NotFoundException";
+        this.passwordIncorrect = err.error.type === "PasswordIncorrectException";
       }
     });
   }
