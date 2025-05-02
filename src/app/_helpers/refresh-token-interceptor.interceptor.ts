@@ -4,11 +4,10 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpClient
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
-import {BehaviorSubject, finalize, map, Observable, throwError} from 'rxjs';
-import { catchError, filter, switchMap, take, tap } from 'rxjs/operators';
+import {BehaviorSubject, finalize, Observable, throwError} from 'rxjs';
+import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import {AuthService} from "../_services/auth/auth.service";
 import {StorageService} from "../_services/storage/storage.service";
 import {environment} from "../../environments/environment";

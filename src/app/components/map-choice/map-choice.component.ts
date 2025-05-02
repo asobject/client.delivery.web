@@ -1,13 +1,12 @@
 import {AfterViewInit, Component, input, NgZone, OnDestroy, OnInit, output} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {PointService} from '../../_services/location/point.service';
-import {GeoService} from '../../_services/yMap/geo.service';
 import {finalize, Subject, takeUntil} from 'rxjs';
 import {CompanyPointDTO} from '../../_models/pointDTO';
 import {ClusterDTO} from '../../_models/clusterDTO';
 import {Coordinates} from '../../_models/coordinates';
 import {getPointTypeLabel} from '../../_enums/point-type.enum';
-import {ConfirmationService, MessageService} from 'primeng/api';
+import {ConfirmationService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {NgIf} from '@angular/common';
 import {Skeleton} from 'primeng/skeleton';
@@ -37,7 +36,7 @@ export class MapChoiceComponent implements OnInit, AfterViewInit, OnDestroy {
   loadingMap: boolean = true;
   loadingPoint: boolean = false;
 
-  constructor(private pointService: PointService, private fb: FormBuilder, private ngZone: NgZone, private geoService: GeoService,private confirmationService: ConfirmationService, private messageService: MessageService) {
+  constructor(private pointService: PointService, private fb: FormBuilder, private ngZone: NgZone,private confirmationService: ConfirmationService) {
 
   }
 

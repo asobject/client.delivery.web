@@ -12,7 +12,6 @@ import {
   AutoComplete,
   AutoCompleteCompleteEvent,
   AutoCompleteSelectEvent,
-  AutoCompleteUnselectEvent
 } from 'primeng/autocomplete';
 import {FloatLabel} from 'primeng/floatlabel';
 import {Coordinates} from '../../_models/coordinates';
