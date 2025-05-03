@@ -6,7 +6,7 @@ import {Card} from 'primeng/card';
 import {Step, StepList, StepPanel, StepPanels, Stepper} from 'primeng/stepper';
 import {Button, ButtonDirective} from 'primeng/button';
 import {RadioButton} from 'primeng/radiobutton';
-import {finalize, forkJoin, Subject, takeUntil} from 'rxjs';
+import {EMPTY, finalize, forkJoin, Subject, takeUntil} from 'rxjs';
 import {NgIf} from '@angular/common';
 import {
   AutoComplete,
@@ -28,6 +28,9 @@ import {CalculateOrderQuery} from '../../_models/calculate-order-query';
 import {getPackageSizeLabel} from '../../_enums/package-size.enum';
 import {MapChoiceComponent} from '../map-choice/map-choice.component';
 import {Skeleton} from 'primeng/skeleton';
+import {PointService} from '../../_services/location/point.service';
+import {catchError, switchMap} from 'rxjs/operators';
+import {Tag} from 'primeng/tag';
 
 @Component({
   selector: 'app-calculate-order',
@@ -49,7 +52,8 @@ import {Skeleton} from 'primeng/skeleton';
     InputText,
     ButtonDirective,
     MapChoiceComponent,
-    Skeleton
+    Skeleton,
+    Tag
   ],
   templateUrl: './calculate-order.component.html',
   styleUrls: ['./calculate-order.component.scss']
@@ -58,9 +62,12 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   private queryParams: any;
 
-  isInitialize: boolean=false;
-  isCalculatingOrder: boolean=false;
-  isCreatingOrder: boolean=false;
+  isInitialize: boolean = false;
+  isCalculatingOrder: boolean = false;
+  isCreatingOrder: boolean = false;
+
+  startPointCheckExist: boolean = false;
+  endPointCheckExist: boolean = false;
 
   deliveryForm!: FormGroup;
   calculationForm!: FormGroup;
@@ -87,7 +94,8 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
     private orderService: OrderService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private userService: UserService
+    private userService: UserService,
+    private pointService: PointService
   ) {
     // Проверка и сохранение query параметров
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(data => {
@@ -105,22 +113,44 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isInitialize = true;
-    // Загрузка начальных геоданных
-    forkJoin({
+
+    const geocodeRequests$ = forkJoin({
       startPoint: this.geoService.getGeocode(this.queryParams?.startPoint),
       endPoint: this.geoService.getGeocode(this.queryParams?.endPoint)
-    })
-      .pipe(takeUntil(this.destroy$),finalize(() => {this.isInitialize=false}))
-      .subscribe({
-        next: ({startPoint, endPoint}) => {
-          this.startCoordinates = startPoint.coordinates;
-          this.endCoordinates = endPoint.coordinates;
-        },
-        error: (err) => {
-          console.error('Ошибка загрузки данных:', err);
-          this.router.navigate(['/']).then();
-        }
-      });
+    }).pipe(
+      takeUntil(this.destroy$)
+    );
+
+    geocodeRequests$.pipe(
+      switchMap(({startPoint, endPoint}) => {
+        this.startCoordinates = startPoint.coordinates;
+        this.endCoordinates = endPoint.coordinates;
+
+        return forkJoin({
+          startCheck: this.pointService.checkExistPoint(this.startCoordinates),
+          endCheck: this.pointService.checkExistPoint(this.endCoordinates)
+        }).pipe(
+          catchError(error => {
+            console.error('Point check error:', error);
+            this.router.navigate(['/']).then();
+            return EMPTY;
+          })
+        );
+      }),
+      finalize(() => {
+        this.isInitialize = false;
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: ({startCheck, endCheck}) => {
+        this.startPointCheckExist = startCheck.exist;
+        this.endPointCheckExist = endCheck.exist;
+      },
+      error: (err) => {
+        console.error('Geocode loading error:', err);
+        this.router.navigate(['/']).then();
+      }
+    });
   }
 
   private initializeForms(): void {
@@ -188,7 +218,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
   }
 
   calculateOrder(): void {
-   this.isCalculatingOrder=true;
+    this.isCalculatingOrder = true;
     this.calculateOrderQuery = {
       senderDeliveryMethod: this.deliveryForm.get('sendMethod')?.value,
       receiverDeliveryMethod: this.deliveryForm.get('receiveMethod')?.value,
@@ -199,12 +229,15 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
     };
     this.calculationForm.get('totalCost')?.setValue("Идет расчет...");
     this.orderService.calculatePrice(this.calculateOrderQuery)
-      .pipe(takeUntil(this.destroy$),finalize(() => {this.isCalculatingOrder=false}))
+      .pipe(takeUntil(this.destroy$), finalize(() => {
+        this.isCalculatingOrder = false
+      }))
       .subscribe({
         next: (data) => {
           this.calculationForm.get('totalCost')?.setValue(data);
         },
         error: () => {
+          this.calculationForm.get('totalCost')?.setValue(null);
           this.messageService.add({
             severity: 'error',
             summary: 'Ошибка',
@@ -308,7 +341,7 @@ export class CalculateOrderComponent implements OnInit, OnDestroy {
     };
 
     this.orderService.createOrder(this.createOrderCommand)
-      .pipe(takeUntil(this.destroy$),finalize(()=>this.isCreatingOrder = false))
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isCreatingOrder = false))
       .subscribe({
         next: () => {
           this.router.navigate(['/']).then();
