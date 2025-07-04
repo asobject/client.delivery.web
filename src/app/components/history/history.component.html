@@ -1,0 +1,46 @@
+<div class="container">
+  <p-card header="История заказов">
+    <div *ngIf="loading">
+      <p-skeleton width="100%" height="20.7rem"></p-skeleton>
+    </div>
+    <div *ngIf="!loading">
+      <p-accordion>
+        @for (order of orders; track i; let i = $index) {
+          <p-accordion-panel [value]="i">
+            <p-accordion-header>
+              <span class="font-bold">№ {{ order.tracker }}</span>
+            </p-accordion-header>
+            <p-accordion-content>
+              <div>
+                <div>
+                  <p><strong>Статус:</strong>
+                    <p-tag [value]="getOrderStatusLabel(order.status)"
+                           [severity]="getOrderStatusSeverity(order.status)"></p-tag>
+                  </p>
+                  @if (order.currentPointAddress) {
+                    <p><strong>Текущая точка:</strong> {{ order.currentPointAddress }}</p>
+                  }
+                </div>
+                <div>
+                  <p><strong>Адрес отправления:</strong> {{ order.senderAddress }}</p>
+                  <p><strong>Адрес получения:</strong> {{ order.receiverAddress }}</p>
+                </div>
+                <div>
+                  <p><strong>Посмотреть изменения:</strong>
+                    <p-button icon="pi pi-info" size="small" class="mr-2" [rounded]="false" [outlined]="true"
+                              (click)="showInfo(order.tracker)"></p-button>
+                  </p>
+                </div>
+              </div>
+            </p-accordion-content>
+          </p-accordion-panel>
+        } @empty {
+          <p class="p-3">Нет доступных заказов</p>
+        }
+      </p-accordion>
+      <div>
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="totalRecords"/>
+      </div>
+    </div>
+  </p-card>
+</div>

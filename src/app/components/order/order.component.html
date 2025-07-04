@@ -1,0 +1,28 @@
+<div class="container">
+
+    <p-card header="Отслеживание">
+
+        <div *ngIf="loading">
+            <p-skeleton width="100%" styleClass="mb-1" height="11.75rem"></p-skeleton>
+        </div>
+        <div *ngIf="!loading &&order">
+            <div>
+                <p><strong>Трек номер:</strong> {{order.tracker}}</p>
+                <p><strong>Статус:</strong>
+                    <p-tag [value]="getOrderStatusLabel(order.status)"
+                           [severity]="getOrderStatusSeverity(order.status)"></p-tag>
+                </p>
+                @if (order.currentPointAddress) {
+                    <p><strong>Текущая точка:</strong> {{ order.currentPointAddress }}</p>
+                }
+            </div>
+            <div>
+                <p><strong>Адрес отправления:</strong> {{ order.senderAddress }}</p>
+                <p><strong>Адрес получения:</strong> {{ order.receiverAddress }}</p>
+            </div>
+        </div>
+      <div *ngIf="!loading &&!order">
+        <p><strong>Заказ не найден</strong></p>
+      </div>
+    </p-card>
+</div>

@@ -1,0 +1,42 @@
+<div class="container">
+  <p-card header="Наши пункты">
+    <div class="skeleton-container" *ngIf="loadingMap">
+      <p-skeleton width="100%" height="100%" class="mb-2"></p-skeleton>
+    </div>
+    <div *ngIf="!loadingMap" id="map" #mapContainer class="map-container"></div>
+  </p-card>
+  <p-dialog [(visible)]="pointDialog" [style]="{ width: '400px' }" appendTo header="Детали пункта" draggable="false"
+            (onHide)="hideDialog()"
+            [modal]="false">
+    <ng-template #content>
+      <div *ngIf="loadingPoint">
+          <div>
+            <small class="text-muted">Наименование пункта</small>
+            <p-skeleton width="100%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+          </div>
+          <div>
+            <small class="text-muted">Адрес</small>
+            <p-skeleton width="100%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+          </div>
+          <div>
+            <small class="text-muted">Тип</small>
+            <p-skeleton width="100%" height="1.5rem" styleClass="mb-2"></p-skeleton>
+          </div>
+      </div>
+      <div *ngIf="!loadingPoint">
+        <div>
+          <small class="text-muted">Наименование пункта</small>
+          <div class="font-semibold mb-2">{{ selectedPoint.name }}</div>
+        </div>
+        <div>
+          <small class="text-muted">Адрес</small>
+          <div class="mb-2">{{ selectedPoint.address }}</div>
+        </div>
+        <div>
+          <small class="text-muted">Тип</small>
+          <div class="mb-2">{{ getPointTypeLabel(selectedPoint.pointType) }}</div>
+        </div>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

@@ -1,0 +1,25 @@
+<div class="container">
+  <p-card header="Отследить посылку">
+    <form [formGroup]="trackingForm" (ngSubmit)="submit()">
+
+      <p-button label="Где найти номер заказа?" pTooltip="Номер заказа можно найти в email или в личном кабинете"
+                tooltipEvent="focus"
+                tooltipPosition="top" styleClass="pl-0" link="true"/>
+      <div>
+        <p-input-group>
+          <p-floatlabel variant="in">
+            <input
+              pInputText
+              formControlName="tracker"
+              id="trackNumber"
+              style="height: 45px"/>
+            <label for="trackNumber">Трек номер</label>
+          </p-floatlabel>
+          <p-inputgroup-addon>
+            <button pButton class="h-full w-full"  severity="info" type="submit" icon="pi pi-search"></button>
+          </p-inputgroup-addon>
+        </p-input-group>
+      </div>
+    </form>
+  </p-card>
+</div>

@@ -1,0 +1,20 @@
+<div class="container">
+  <p-card header="Чат техподдержки" styleClass="h-auto">
+    @for (item of requests; track i; let i = $index) {
+      <div class="flex justify-content-end flex-wrap pb-2">
+        <div class="flex align-items-center justify-content-center">
+          <p-tag [value]="item" severity="secondary"/>
+        </div>
+      </div>
+      <div class="flex justify-content-start flex-wrap pb-2">
+        <div class="flex align-items-center justify-content-center">{{ responses[i] }}</div>
+      </div>
+    }
+    <ng-template #footer>
+      <p-inputgroup>
+        <input pInputText [(ngModel)]="prompt" [disabled]="loadingSending" (keyup.enter)="sendMessage()"  placeholder="Введите сообщение"/>
+        <p-button icon="pi pi-send" [loading]="loadingSending" label="Отправить" (click)="sendMessage()"/>
+      </p-inputgroup>
+    </ng-template>
+  </p-card>
+</div>

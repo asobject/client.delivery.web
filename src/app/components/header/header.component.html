@@ -1,0 +1,47 @@
+<p-menubar [model]="menuBar">
+  <ng-template #start>
+    <p-button severity="secondary" icon="pi pi-home" routerLink="/home"/>
+  </ng-template>
+  <ng-template #item let-item let-root="root">
+    <a  class="flex align-items-center p-menubar-item-link">
+      <span [class]="item.icon"></span>
+      <span routerLink="{{item.routerLink}}" >{{item.label}}</span>
+    </a>
+  </ng-template>
+
+  <ng-template #end>
+<div class="flex items-center gap-2" >
+  <button
+    pButton
+    size="small"
+    severity="primary"
+    icon="pi pi-question"
+    label="Помощь"
+    class="p-button-rounded"
+    routerLink="/support"
+  ></button>
+    <div *ngIf="!userService.isAuthenticated()">
+      <p-button
+        size="small"
+        severity="primary"
+        label="Войти"
+        icon="pi pi-sign-in"
+        class="p-button-rounded"
+        routerLink="/login"
+      />
+    </div>
+    <div  *ngIf="userService.isAuthenticated()">
+    <p-menu  #menu [model]="profileMenu" [popup]="true"/>
+    <button
+      pButton
+      size="small"
+      severity="secondary"
+      icon="pi pi-user"
+      label="{{firstName}}"
+      class="p-button-rounded"
+      (click)="menu.toggle($event)"
+    ></button>
+    </div>
+</div>
+  </ng-template>
+</p-menubar>

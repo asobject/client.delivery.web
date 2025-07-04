@@ -1,0 +1,10 @@
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.min.css";
+html, body {
+  height: calc(100vh - 8px);
+}
+.container{
+  height: 100%;
+  width: 100%;
+  padding: 1rem 0;
+}

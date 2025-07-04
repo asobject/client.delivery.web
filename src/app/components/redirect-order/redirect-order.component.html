@@ -1,0 +1,85 @@
+<div class="container">
+
+  <p-card header="Рассчитать доставку">
+    <form [formGroup]="deliveryForm" (ngSubmit)="submit()">
+      <div class="formgrid grid">
+
+
+        <!-- Поле "Откуда" -->
+        <div class="field col-12 md:col-4">
+          <p-floatlabel class="flex-1" variant="in">
+            <p-autoComplete
+              id="startPoint"
+              formControlName="startPoint"
+              showClear="true"
+              [suggestions]="suggestions"
+              (completeMethod)="loadSuggestions($event)"
+              [style]="{'width':'100%'}"
+              [inputStyle]="{'width':'100%'}"
+              [panelStyle]="{'width':'100%'}">
+            </p-autoComplete>
+            <label for="startPoint">Откуда</label>
+          </p-floatlabel>
+
+
+          <div>
+            <p-button (click)="selectCity('Москва', 'startPoint')" size="small" variant="text" severity="secondary"
+                      label="Москва"/>
+            <p-button (click)="selectCity('Санкт-Петербург', 'startPoint')" size="small" variant="text"
+                      severity="secondary" label="Санкт-Петербург"/>
+            <p-button (click)="selectCity('Новосибирск', 'startPoint')" size="small" variant="text" severity="secondary"
+                      label="Новосибирск"/>
+          </div>
+        </div>
+
+        <!-- Поле "Куда" -->
+        <div class="field col-12 md:col-4">
+          <p-floatlabel variant="in">
+            <p-autoComplete
+              id="endPoint"
+              formControlName="endPoint"
+              showClear="true"
+              [suggestions]="suggestions"
+              (completeMethod)="loadSuggestions($event)"
+              [style]="{'width':'100%'}"
+              [inputStyle]="{'width':'100%'}"
+              [panelStyle]="{'width':'100%'}">
+            </p-autoComplete>
+            <label for="endPoint">Куда</label>
+          </p-floatlabel>
+          <div>
+            <p-button (click)="selectCity('Москва', 'endPoint')" size="small" variant="text" severity="secondary"
+                      label="Москва"/>
+            <p-button (click)="selectCity('Санкт-Петербург', 'endPoint')" size="small" variant="text"
+                      severity="secondary" label="Санкт-Петербург"/>
+            <p-button (click)="selectCity('Новосибирск', 'endPoint')" size="small" variant="text" severity="secondary"
+                      label="Новосибирск"/>
+          </div>
+        </div>
+        <div class="field col-12 md:col-4">
+          <p-floatlabel variant="in">
+            <p-select id="packageSize" formControlName="packageSize"
+                      [options]="packageSizeOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      [style]="{'min-width':'100%'}"
+                      [panelStyle]="{'min-width':'100%'}"/>
+            <label for="packageSize">Размер посылки</label>
+          </p-floatlabel>
+        </div>
+
+
+      </div>
+      <!-- Кнопка расчета -->
+      <div>
+        <button
+          pButton
+          type="submit"
+          label="Рассчитать"
+          class="p-button-primary"
+          [disabled]="deliveryForm.invalid">
+        </button>
+      </div>
+    </form>
+  </p-card>
+</div>

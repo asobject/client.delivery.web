@@ -1,0 +1,66 @@
+<div class="container flex justify-content-center flex-wrap">
+  <div class="w-max">
+    <p-card  header="Личная информация">
+      <form [formGroup]="personalForm">
+        <p-inputgroup styleClass="w-fill">
+          <p-floatlabel variant="in">
+            <input id="firstName" type="text" class="w-full" pInputText formControlName="firstName"/>
+            <label for="firstName">Имя</label>
+          </p-floatlabel>
+          <p-inputgroup-addon>
+            <p-button icon="pi pi-user-edit" [loading]="loadingFirstName" styleClass="p-3" class="h-full w-full" severity="primary" (click)="editFirstName()"/>
+          </p-inputgroup-addon>
+        </p-inputgroup>
+        <p-inputgroup styleClass="w-fill mt-2">
+          <p-floatlabel variant="in">
+            <input id="lastName" type="text" class="w-full" pInputText formControlName="lastName"/>
+            <label for="lastName">Фамилия</label>
+          </p-floatlabel>
+          <p-inputgroup-addon>
+            <p-button
+              icon="pi pi-user-edit"
+              styleClass="p-3"
+              class="h-full w-full"
+              severity="primary"
+              [loading]="loadingLastName"
+              (click)="editLastName()"
+            />
+          </p-inputgroup-addon>
+        </p-inputgroup>
+      </form>
+    </p-card>
+    <div class="mt-2">
+      <p-card header="Подтвеждение аккаунта">
+        <p-tag *ngIf="payload.emailVerified"  icon="pi pi-verified" [style]="{background: 'transparent'}" styleClass="px-0"  value="Аккаунт подтвежден"></p-tag>
+        <p-button *ngIf="!payload.emailVerified" styleClass="p-0" label="Аккаунт не подтвежден"
+                  variant="text"
+                  link="true"
+                  severity="warn"
+                  (click)="sendEmailConfirmation()"
+        />
+      </p-card>
+    </div>
+    <div class="mt-2">
+
+      <p-card header="Безопасность">
+        <div class="flex flex-column">
+<!--          <div class="flex align-items-center justify-content-center w-full">-->
+<!--            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" label="Изменить почту"/>-->
+<!--          </div>-->
+          <div class="flex align-items-center justify-content-center w-full">
+            <p-button styleClass="mt-2 w-full" class="w-full" severity="primary" (click)="changePassword()" label="Изменить пароль"/>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+  <p-dialog [(visible)]="changePasswordDialog" styleClass="w-max" draggable="false" header="Измените данные"
+            (onHide)="hideChangePasswordDialog()"
+            [modal]="true">
+    <ng-template #content>
+      <div>
+        <app-change-password></app-change-password>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

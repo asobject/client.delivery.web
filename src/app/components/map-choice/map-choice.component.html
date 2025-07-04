@@ -1,0 +1,38 @@
+<div class="container">
+  <div  class="skeleton-container" *ngIf="loadingMap">
+    <p-skeleton width="100%" height="100%" class="mb-2"></p-skeleton>
+  </div>
+    <div *ngIf="!loadingMap" id="map" #mapContainer class="map-container"></div>
+</div>
+<div class="card flex justify-center">
+  <p-confirmDialog #cd [style]="{ width: '400px' }">
+    <ng-template #message class="w-full">
+      <div class="w-full">
+        <!-- Скелетон для состояния загрузки -->
+        <ng-container *ngIf="loadingPoint">
+          <p-skeleton width="100%" height="10.5rem"  styleClass="mb-1"></p-skeleton>
+        </ng-container>
+
+        <!-- Контент после загрузки -->
+        <ng-container *ngIf="!loadingPoint" class="w-full">
+          <div>
+            <small class="text-muted">Наименование пункта</small>
+            <div class="font-semibold mb-2">{{ selectedPoint.name }}</div>
+          </div>
+
+          <div>
+            <small class="text-muted">Адрес</small>
+            <div class="mb-2">{{ selectedPoint.address }}</div>
+          </div>
+
+          <div >
+            <small class="text-muted">Тип</small>
+            <div class="mb-2">{{ getPointTypeLabel(selectedPoint.pointType) }}</div>
+          </div>
+
+          <p-button label="Выбрать" (onClick)="onAccept()" styleClass="w-full mt-1"></p-button>
+        </ng-container>
+      </div>
+    </ng-template>
+  </p-confirmDialog>
+</div>
